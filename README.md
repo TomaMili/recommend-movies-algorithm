@@ -17,6 +17,8 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## Startup
 
-cd C:\recommend-movies-algorithm\backend
+cd backend
 .\venv\Scripts\activate
 uvicorn main:app --reload --port 8000
+
+npm run dev

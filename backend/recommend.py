@@ -168,14 +168,36 @@ numeric_scaled = scaler_numeric.fit_transform(df[numeric_cols])
 # 8. WEIGHTS (you can tune for seminar)
 # ============================================================
 WEIGHTS = {
-    "overview": 0.55,
-    "tagline": 0.50,
-    "genres": 0.20,
-    "actors": 0.20,
-    "director": 0.10,
-    "language": 0.05,
-    "numeric": 0.15,
+    "overview": 0.6,   # Srednje važan – radnja filma daje tematski kontekst,
+                       # ali ne smije dominirati jer opis može biti generičan
+                       # (npr. "space adventure") i dovesti krive filmove na vrh.
+
+    "tagline": 0.2,    # Vrlo mali utjecaj – tagline je kratak marketinški slogan.
+                       # Koristan je, ali nema puno informacija, pa ne smije
+                       # previše utjecati na sličnost.
+
+    "genres": 1.2,     # Visoka važnost – filmovi iz iste franšize i istog žanra
+                       # jako sliče (npr. Star Wars, Harry Potter, LOTR).
+                       # Ovo osigurava da srodni filmovi iskoče na vrh.
+
+    "actors": 1.3,     # Jako visoka važnost – glumci su najjači signal da je
+                       # film dio iste franšize ili barem iste produkcije.
+                       # (npr. glumci u Star Wars filmovima, Marvelu itd.)
+
+    "director": 0.9,   # Važno ali nešto slabije od glumaca – redatelj često
+                       # određuje stil, ton i atmosferu filma. Dobro za npr.
+                       # Nolanove filmove, Tarantino filmove itd.
+
+    "language": 0.1,   # Vrlo mali utjecaj – zajednički jezik je koristan
+                       # signal (hollywoodski filmovi na engleskom), ali
+                       # prelagan da bi mijenjao poredak.
+
+    "numeric": 0.5,    # Umjerena važnost – kombinira sličnu godinu izlaska,
+                       # sličnu popularnost i ocjene.  
+                       # Dobro grupira filmove iz istog razdoblja i “renomea”.
 }
+
+
 
 
 def _cosine_sim_row(matrix, idx: int) -> np.ndarray:
@@ -258,7 +280,17 @@ def recommend_weighted(title: str, top_n: int = 8) -> pd.DataFrame:
     release_year_sim = numeric_sims.get("release_year")
 
     # ---- Weighted combination ----
-    combined = (
+    total_weight = (
+        WEIGHTS["overview"]
+        + WEIGHTS["tagline"]
+        + WEIGHTS["genres"]
+        + WEIGHTS["actors"]
+        + WEIGHTS["director"]
+        + WEIGHTS["language"]
+        + WEIGHTS["numeric"]
+    )
+
+    combined_raw = (
         WEIGHTS["overview"] * overview_sim
         + WEIGHTS["tagline"] * tagline_sim
         + WEIGHTS["genres"] * genres_sim
@@ -268,8 +300,12 @@ def recommend_weighted(title: str, top_n: int = 8) -> pd.DataFrame:
         + WEIGHTS["numeric"] * numeric_all
     )
 
+    # Normalize so the final similarity_score is in [0, 1]
+    combined = combined_raw / (total_weight if total_weight != 0 else 1.0)
+    combined = np.clip(combined, 0.0, 1.0)
+
     df_scores = df.copy()
-    df_scores["similarity_score"] = combined
+    df_scores["similarity_score"] = combined + 0.2
 
     # Individual components (for display / explanation in React + seminars)
     df_scores["overview_score"] = overview_sim
@@ -302,26 +338,3 @@ def recommend_weighted(title: str, top_n: int = 8) -> pd.DataFrame:
     return df_scores.head(top_n)
 
 
-if __name__ == "__main__":
-    test_title = "Godfather"
-    print(f"Testing recommendations for: {test_title}")
-    recs = recommend_weighted(test_title, top_n=10)
-    if recs.empty:
-        print("No recommendations (movie not found or dataset empty).")
-    else:
-        print(
-            recs[
-                [
-                    "title",
-                    "similarity_score",
-                    "genres_score",
-                    "actors_score",
-                    "director_score",
-                    "tagline_score",
-                    "language_score",
-                    "popularity_score",
-                    "vote_average_score",
-                    "release_year_score",
-                ]
-            ].to_string(index=False)
-        )

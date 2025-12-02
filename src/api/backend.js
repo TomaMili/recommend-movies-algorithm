@@ -1,4 +1,3 @@
-// src/api/backend.js
 const BASE_URL = "http://localhost:8000";
 
 export async function getRecommendations(title, topN = 8) {
@@ -13,5 +12,5 @@ export async function getRecommendations(title, topN = 8) {
   }
 
   const data = await res.json();
-  return data.results; // list of movie objects with scores
+  return data.results;
 }
