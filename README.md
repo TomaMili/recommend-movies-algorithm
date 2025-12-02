@@ -91,7 +91,7 @@ Green → Yellow → Orange → Red
 
 Netflix-style similarity bar:
 
-<p align="center"> <img width="500" src="assets/bar_example.png"/> </p>
+<p align="center"> <img width="500" src="assets/image.png"/> </p>
 
 Example result:
 
