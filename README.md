@@ -98,6 +98,8 @@ GET /titles?limit=50
 ]
 }
 
+<img width="1162" height="193" alt="starwars" src="https://github.com/user-attachments/assets/190ab363-fcd0-43c2-8e57-69995e141a00" />
+
 ## Future Improvements
 
 - Hybrid collaborative filtering
