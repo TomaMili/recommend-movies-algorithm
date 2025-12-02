@@ -1,6 +1,7 @@
 # Movie Recommendation System (TMDB + FastAPI + React)
 
 A high-performance, content-based movie recommender powered by TMDB, FastAPI, and React.
+<img width="1147" height="913" alt="image" src="https://github.com/user-attachments/assets/e88f1e10-be4c-4e7b-bb92-724f0cafa0f3" />
 
 ## Overview
 
@@ -96,6 +97,8 @@ GET /titles?limit=50
 }
 ]
 }
+
+<img width="1162" height="193" alt="starwars" src="https://github.com/user-attachments/assets/190ab363-fcd0-43c2-8e57-69995e141a00" />
 
 ## Future Improvements
 
